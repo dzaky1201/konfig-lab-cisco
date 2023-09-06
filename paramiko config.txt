@@ -1,0 +1,64 @@
+import paramiko
+import time
+ 
+ip_address = "192.168.10.2"
+username = "admin"
+password = "admin1234"
+ssh_client = paramiko.SSHClient()
+ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh_client.connect(hostname=ip_address, username=username, password=password)
+ 
+print("Berhasil login to {0}".format(ip_address))
+ 
+conn = ssh_client.invoke_shell()
+ 
+routerconf = [
+    "conf t\n",
+    "int lo0\n",
+    "ip addr 1.1.1.1 255.255.255.255\n",
+    "int e1/0\n",
+    "no sh\n",
+    "ip addr 10.10.10.1 255.255.255.252\n",
+    "int e1/1\n",
+    "ip addr 11.11.11.1 255.255.255.252\n",
+    "router ospf 1\n",
+    "router-id 1.1.1.1\n",
+    "network 1.1.1.1 0.0.0.0 area 0\n",
+    "network 10.10.10.1 0.0.0.0 area 0\n",
+    "network 11.11.11.1 0.0.0.0 area 0\n",
+    "mpls ldp sync\n",
+    "mpls ldp autoconfig\n",
+    "mpls traffic-eng area 0\n",
+    "exit\n",
+    "router bgp 65000\n",
+    "bgp router-id 1.1.1.1\n"
+    "neig 2.2.2.2 remote-as 65000\n",
+    "neig 2.2.2.2 update-source loopback0\n",
+    "neig 3.3.3.3 remote-as 65000\n",
+    "neig 3.3.3.3 update-source loopback0\n",
+    "address-family ipv4\n",
+    "neig 2.2.2.2 activate\n",
+    "neig 2.2.2.2 route-reflector-client\n",
+    "neig 2.2.2.2 soft-reconfiguration inbound\n",
+    "neig 3.3.3.3 activate\n",
+    "neig 3.3.3.3 route-reflector-client\n",
+    "neig 3.3.3.3 soft-reconfiguration inbound\n",
+    "exit-address-family\n",
+    "address-family vpnv4\n",
+    "neig 2.2.2.2 activate\n",
+    "neig 2.2.2.2 route-reflector-client\n",
+    "neig 2.2.2.2 send-community both\n",
+    "neig 3.3.3.3 activate\n",
+    "neig 3.3.3.3 route-reflector-client\n",
+    "neig 3.3.3.3 send-community both\n",
+    "exit-address-family\n",
+    "do write mem\n"
+]
+ 
+for index, item in enumerate(routerconf):
+    conn.send(item)
+    time.sleep(1)
+    if index == len(routerconf) - 1 :
+        output = conn.recv(65535)
+        print(output)
+        ssh_client.close()

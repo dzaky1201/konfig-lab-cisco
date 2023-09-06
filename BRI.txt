@@ -1,0 +1,126 @@
+BRI#sh run 
+Building configuration...
+
+Current configuration : 1332 bytes
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+!
+hostname BRI
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+ip cef
+no ipv6 cef
+!         
+!         
+multilink bundle-name authenticated
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+interface Loopback0
+ ip address 4.4.4.4 255.255.255.255
+!         
+interface FastEthernet0/0
+ no ip address
+ shutdown 
+ duplex full
+!         
+interface Ethernet1/0
+ ip address 88.88.88.2 255.255.255.252
+ duplex full
+!         
+interface Ethernet1/1
+ no ip address
+ shutdown 
+ duplex full
+!         
+interface Ethernet1/2
+ no ip address
+ shutdown 
+ duplex full
+!         
+interface Ethernet1/3
+ ip address 100.100.100.2 255.255.255.252
+ duplex full
+!         
+interface Ethernet1/4
+ no ip address
+ shutdown 
+ duplex full
+!         
+interface Ethernet1/5
+ no ip address
+ shutdown 
+ duplex full
+!         
+interface Ethernet1/6
+ no ip address
+ shutdown 
+ duplex full
+!         
+interface Ethernet1/7
+ no ip address
+ shutdown 
+ duplex full
+!         
+router bgp 10
+ bgp log-neighbor-changes
+ neighbor 88.88.88.1 remote-as 65000
+ !        
+ address-family ipv4
+  redistribute connected
+  neighbor 88.88.88.1 activate
+  neighbor 88.88.88.1 soft-reconfiguration inbound
+ exit-address-family
+!         
+ip forward-protocol nd
+!         
+!         
+no ip http server
+no ip http secure-server
+!         
+!         
+!         
+!         
+control-plane
+!         
+!         
+line con 0
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ login    
+!         
+!         
+end   
